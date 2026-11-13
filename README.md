@@ -4,6 +4,10 @@ A browser extension for [Ragnarok Classic Idle](https://play.roclassicidle.com.b
 
 It works by reading the game's network traffic in your own browser tab and clicking the same buttons you would click. It does not cast skills, send anything to the server on its own, or touch your login.
 
+
+<img width="359" height="561" alt="image" src="https://github.com/user-attachments/assets/888e0610-a867-46b7-8087-08e1406f562b" />
+
+
 ## Install
 
 The extension is not on the Chrome Web Store, so it is loaded by hand. This works in Brave, Chrome and Edge.
