@@ -147,6 +147,12 @@ par(5, 300); // low again on the next hunt -> returns again
 await sleep(700);
 assert.equal(clicks.at(-1), 'button.hb-voltar');
 assert.equal(clicks.length, 6);
+map('gl_dun01'); // late repeat of the hunting map's arrival: must not count as the city
+await sleep(300);
+assert.equal((await ask({ t: 'state' })).trip, 'returning');
+map('prontera');
+await sleep(300);
+assert.equal((await ask({ t: 'state' })).trip, 'city');
 
 console.log('extension selftest ok');
 console.log(res.log.map((l) => '  ' + l.msg).join('\n'));

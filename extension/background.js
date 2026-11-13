@@ -225,7 +225,10 @@ function startTrip(why, { buff = null, hp = false } = {}) {
     needs: buff === null ? [] : required.length ? required : [buff],
     needHp: (buff !== null || hp) && hpLimit() > 0,
   };
-  trip.timeout = setTimeout(() => endTrip('The map did not change after pressing return; trip abandoned.'), 20000);
+  trip.timeout = setTimeout(() => {
+    endTrip('The map did not change after pressing return; trip abandoned.');
+    hpLow = false; // if HP is still low, the next HP update tries again
+  }, 20000);
 }
 
 function travelBackWhenReady() {
@@ -259,6 +262,8 @@ game.onChange = () => {
 game.onMap = (map) => {
   if (!trip) return;
   if (trip.phase === 'returning') {
+    // The server repeats the arrival announcement of the map we are still on; that is not the city.
+    if (map === trip.from) return;
     clearTimeout(trip.timeout);
     trip.phase = 'city';
     trip.city = map;
