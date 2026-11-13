@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "RO Classic Idle helper",
+  "version": "2.0",
+  "description": "Shows HP, SP, map and buffs for Ragnarok Classic Idle, and returns to the city when a watched buff ends.",
+  "permissions": ["debugger", "tabs", "alarms", "storage"],
+  "host_permissions": ["https://play.roclassicidle.com.br/*"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": { "default_title": "RO Classic Idle helper", "default_popup": "popup.html" }
+}

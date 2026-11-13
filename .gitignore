@@ -1,0 +1,13 @@
+# Browser profiles: may contain saved logins
+.browser-profile*/
+
+# Account id and character name learned by the old Node script
+.identity.json
+
+# Build output (zip of extension/)
+*.zip
+
+node_modules/
+*.log
+.DS_Store
+Thumbs.db

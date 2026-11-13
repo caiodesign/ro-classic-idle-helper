@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #151824;
+        --panel: #1d2131;
+        --line: #2c3247;
+        --text: #e7e9f2;
+        --muted: #8b92aa;
+        --hp: #63c356;
+        --sp: #4a8fe6;
+        --gold: #e6b84a;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; width: 360px; font: 13px/1.35 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; background: var(--ink); color: var(--text); }
+      section { padding: 12px 14px; }
+      section + section { border-top: 1px solid var(--line); }
+      :focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+      /* ---- character ---- */
+      .who { display: flex; align-items: center; gap: 8px; }
+      .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #5b6177; }
+      .dot.on { background: var(--hp); box-shadow: 0 0 0 3px rgba(99, 195, 86, 0.18); }
+      #name { font-size: 15px; font-weight: 650; letter-spacing: 0.01em; }
+      #map { color: var(--muted); }
+      #map:not(:empty)::before { content: 'in '; }
+      .credit { font-size: 11px; opacity: 0.5; }
+      .who .switch { margin-left: auto; }
+
+      .bars { display: grid; grid-template-columns: 20px 1fr auto; gap: 6px 8px; margin-top: 10px; align-items: center; font-size: 11px; }
+      .bars > span:first-child, .bars > span:nth-child(4) { color: var(--muted); font-weight: 600; }
+      .bar { height: 8px; border-radius: 4px; background: var(--panel); overflow: hidden; }
+      .bar i { display: block; height: 100%; width: 0; border-radius: 4px; transition: width 0.3s; }
+      .bar.hp i { background: var(--hp); }
+      .bar.sp i { background: var(--sp); }
+      .num { font-variant-numeric: tabular-nums; min-width: 84px; text-align: right; }
+
+      #buffs { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
+      #buffs:empty { display: none; }
+      #buffs button { font: inherit; font-size: 11px; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--text); cursor: pointer; }
+      #buffs button:hover { border-color: var(--muted); }
+      #buffs button.unnamed { color: var(--muted); background: none; }
+      #buffs button.watched { border-color: var(--gold); color: var(--gold); background: rgba(230, 184, 74, 0.1); }
+      .hint { margin-top: 6px; font-size: 11px; color: var(--muted); }
+      #buffs:empty + .hint { display: none; }
+      #trip { margin-top: 8px; color: var(--gold); }
+      #trip:empty { display: none; }
+
+      /* ---- settings ---- */
+      h2 { margin: 0 0 8px; font-size: 13px; font-weight: 650; display: flex; align-items: center; justify-content: space-between; }
+      .field { display: block; margin-top: 8px; }
+      .field > span { display: block; margin-bottom: 3px; font-size: 12px; color: var(--muted); }
+      .inline { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: var(--muted); }
+      .inline input { margin-left: auto; }
+      .pair { display: grid; grid-template-columns: 1fr 86px; gap: 8px; }
+      input[type='text'], input[type='number'] { width: 100%; padding: 5px 8px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font: inherit; }
+      input::placeholder { color: #5f667d; }
+      input[type='number'] { width: 56px; text-align: right; font-variant-numeric: tabular-nums; appearance: textfield; }
+      input[type='number']::-webkit-inner-spin-button { display: none; }
+      .unit { margin-left: -4px; }
+      .pair input[type='number'] { width: 100%; }
+
+      /* a checkbox drawn as a switch */
+      .switch { appearance: none; flex: none; width: 30px; height: 17px; margin: 0; border-radius: 9px; background: #3a4159; position: relative; cursor: pointer; transition: background 0.15s; }
+      .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: #c9cddb; transition: transform 0.15s; }
+      .switch:checked { background: var(--hp); }
+      .switch:checked::after { transform: translateX(13px); background: #fff; }
+      section:has(#goBack:not(:checked)) .back { opacity: 0.4; }
+
+      .warn { margin-top: 8px; font-size: 12px; color: var(--gold); }
+      .warn:empty { display: none; }
+
+      .tests { display: flex; align-items: center; gap: 6px; padding-top: 10px; padding-bottom: 10px; }
+      .tests span { color: var(--muted); font-size: 12px; margin-right: auto; }
+      .tests button { padding: 4px 10px; border-radius: 4px; border: 1px solid var(--line); background: none; color: var(--text); font: inherit; font-size: 12px; cursor: pointer; }
+      .tests button:hover { background: var(--panel); border-color: var(--muted); }
+
+      /* ---- activity ---- */
+      details { padding: 0; font-size: 11px; color: var(--muted); }
+      summary { padding: 8px 14px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      #log { max-height: 120px; overflow-y: auto; padding: 0 14px 10px; }
+      #log div { margin-bottom: 3px; }
+      #log time { color: #626982; margin-right: 6px; font-variant-numeric: tabular-nums; }
+      @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+    </style>
+  </head>
+  <body>
+    <section>
+      <div class="who">
+        <span id="dot" class="dot"></span>
+        <span id="name">Not connected</span>
+        <span id="map"></span>
+        <span class="credit">made by chics</span>
+        <input type="checkbox" class="switch" id="enabled" title="Helper on or off" aria-label="Helper enabled" />
+      </div>
+      <div class="bars">
+        <span>HP</span>
+        <div class="bar hp"><i id="hpFill"></i></div>
+        <span class="num" id="hp">?</span>
+        <span>SP</span>
+        <div class="bar sp"><i id="spFill"></i></div>
+        <span class="num" id="sp">?</span>
+      </div>
+      <div id="buffs"></div>
+      <div class="hint">Click a buff to add or remove it from the watched list.</div>
+      <div id="trip"></div>
+    </section>
+
+    <section>
+      <h2>Return to the city</h2>
+      <label class="field">
+        <span>When any of these buffs ends</span>
+        <input type="text" id="watch" placeholder="CONCENTRATION, BLESS" />
+      </label>
+      <label class="inline">
+        When HP falls below (0 = off)
+        <input type="number" id="hpBelow" min="0" max="100" step="1" /><span class="unit">%</span>
+      </label>
+    </section>
+
+    <section>
+      <h2>Travel back afterwards <input type="checkbox" class="switch" id="goBack" aria-label="Travel back afterwards" /></h2>
+      <div class="back">
+        <label class="field">
+          <span>Once all of these buffs are active</span>
+          <input type="text" id="require" placeholder="empty: the buff that ended" />
+        </label>
+        <div class="pair">
+          <label class="field">
+            <span>Map (search text, first result)</span>
+            <input type="text" id="mapSearch" placeholder="empty: the map you left" />
+          </label>
+          <label class="field">
+            <span>Wait (seconds)</span>
+            <input type="number" id="backAfter" min="0" step="1" />
+          </label>
+        </div>
+      </div>
+      <div id="unknown" class="warn"></div>
+    </section>
+
+    <section class="tests">
+      <span>Try it now</span>
+      <button id="returnNow">Return to city</button>
+      <button id="backNow">Travel to map</button>
+    </section>
+
+    <section style="padding: 0">
+      <details>
+        <summary id="logLast">No activity yet</summary>
+        <div id="log"></div>
+      </details>
+    </section>
+    <script src="popup.js"></script>
+  </body>
+</html>
